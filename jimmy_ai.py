@@ -2,6 +2,9 @@
 from itty import *
 import json
 import pprint
+import jimmy 
+
+
 
 @post('/')
 def index(request):
@@ -11,6 +14,11 @@ def index(request):
 
 	pprint.pprint(r)
 	return "true"
+
+	action = r['result']['action']
+
+	if action == 'get_grades':
+		get_grades()
 
 
 
