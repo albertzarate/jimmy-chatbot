@@ -10,9 +10,27 @@ import requests
 # general format for requesting url: https://canvas.instructure.com/api/v1/ + path
 # example: https://canvas.instructure.com/api/v1/courses?include[]=total_scores  for the request for user's grades
 
+def Authorization():
+    	global access_token
+
+def get_announcement():
+	url = 'https://canvas.instructure.com/api/v1//api/v1/announcements'
+	
+	params = {
+		'context_codes':'',
+		'start_date':'',
+		'end_date':'',
+		'active_only':''}
+	
+	r = requests.get(url, params,headers = {"Authorization":access_token} )
+	data = json.loads(r.text)
+	title = data['title'], message = data['message']
+	output = 'reply message'
+
+
 @post('/')
 def index(request):
-	global r = json.loads(request.body)
+	r = json.loads(request.body)
 	if not r:
 	    return "True"
 
@@ -25,25 +43,7 @@ def index(request):
 		get_grades()
 
 	if action == 'get_announcement':
-    	get_announcement()
-
-def get_announcement():
-	url = 'https://canvas.instructure.com/api/v1//api/v1/announcements'
-	params = dict(
-		context_codes= ''
-		start_date = ''
-		end_date = ''
-		active_only = ''
-	)
-	r = requests.get(url, params,headers = {"Authorization":access_token} )
-	data = json.loads(r.text)
-	title = data['title'], message = data['message']
-	output = 'reply message'
-
-def Authorization():
-    	global access_token
-
-
+		get_announcement()
 
 
 if __name__ == "__main__": 
