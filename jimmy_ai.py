@@ -2,10 +2,26 @@
 from itty import *
 import json
 import pprint
-import jimmy
 import requests
 from bs4 import BeautifulSoup
-import urllib.request
+from six.moves import urllib
+import os.path
+import sys
+import spark
+import urllib2
+
+
+try:
+    import apiai
+except ImportError:
+    sys.path.append(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)
+    )
+    import apiai
+
+CLIENT_ACCESS_TOKEN = '880bca9aacd145dfb6f8c4c7d7a690cf'
+
+
 
 
 # api info website for Canvas https://canvas.instructure.com/courses/785215
@@ -27,6 +43,41 @@ def Authorization():
 	requests.post(url, data = data)
 
 
+<<<<<<< HEAD
+=======
+def login(): 
+	return True
+
+def post_message_data(data):
+	messages_url = 'https://api.ciscospark.com/v1/messages'
+	sendSparkPOST(messages_url, data)
+
+def sendSparkPOST(url, data):
+	"""
+	This method is used for:
+	    -posting a message to the Spark room to confirm that a command was received and processed
+	"""
+
+	# need to make sure that data is no longer than the spark POST limit
+	# of 7439 characters (before encryption).
+
+	if data:
+	    if data.get("markdown") and len(data.get("markdown")) > 7400:
+	        data["markdown"] = ( data.get("markdown")[:7400] + "...[truncated]" )
+
+	    if data.get("text") and len(data.get("text")) > 7400:
+	        data["text"] = ( data.get("text")[:7400] + "...[truncated]" )
+
+	request = urllib2.Request(url, json.dumps(data),
+	                        headers={"Accept" : "application/json",
+	                                 "Content-Type":"application/json"})
+	request.add_header("Authorization", "Bearer "+ "ZDhiZjdlZjUtYmRlNy00OGEzLWE1YWMtNjdiNTUyMTgzZmViMTZhYTQzZWEtZTky")
+	contents = urllib2.urlopen(request).read()
+	return contents
+
+def get_announcement():
+	url = 'https://canvas.instructure.com/api/v1//api/v1/announcements'
+>>>>>>> 06f4e4636d78ab82651c19d2bab3bf1de59770c6
 
 
 def get_announcement():
@@ -44,19 +95,27 @@ def get_announcement():
 
 def get_classes():
 
+	print("IN GET CLASS FUNCTION")
 	course_ids = []
 	classes = []
-    url = 'https://sjsu.instructure.com/'
-    content = urllib.request.urlopen(url).read()
-    soup=BeautifulSoup(content,'html.parser')
-    tag=soup.body.find(class_="ic-NavMenu-list-item__link")
-    for string in tag.strings
-        print(string)
+	url = 'https://sjsu.instructure.com/'
+	content = urllib.request.urlopen(url).read()
+	soup=BeautifulSoup(content,'html.parser')
+	tag=soup.body.find(class_="ic-NavMenu-list-item__link")
+	for string in tag.string:
+	    print(string)
+	    msg = "Classes: "
+	    msg+= string
+	    post_message_data( { "roomId": roomid, "markdown": msg } )
+
+	
 	classes_data = {'classes':classes, 'course id': course_ids}
 
+	
 
-	return classes_data
 
+	#return classes_data
+	return tag
 
 
 def get_grades():
@@ -72,10 +131,14 @@ def get_grades():
         soup=BeautifulSoup(content,'html.parser')
         tag=soup.body.find(class_="student_assignment final_grade")
         grade=""
-        for string in tag.stripped_strings
+        for string in tag.stripped_strings:
             grade+=(repr(string))
         grade=grade[9]+grade[10]+'%' #orig str is 'total:__%', this returns __%
         class_and_grade[courses[i]]=grade #adds a class:grade pair
+
+	msg = class_and_grade
+	post_message_data( { "roomId": roomid, "markdown": msg } )
+
 
     return class_and_grade # returns a dict of class:grade pairs
 
@@ -86,19 +149,22 @@ def index(request):
 	    return "True"
 
 	pprint.pprint(r)
-	return "true"
+
+	roomid = r['originalRequest']['data']['data']['roomId']
+	print roomid
 
 	action = r['result']['action']
 
 	if action == 'get_grades':
 		get_grades()
 
-	if action == 'classes':
+	if action == 'get_classes':
 		get_classes()
 
 	if action == 'get_announcement':
 		get_announcement()
 
+<<<<<<< HEAD
 # triggered by canvas login URL callback
 @post('/')
 def authentication(request):
@@ -110,6 +176,9 @@ def authentication(request):
 
 
 
+=======
+	return True
+>>>>>>> 06f4e4636d78ab82651c19d2bab3bf1de59770c6
 
 
 if __name__ == "__main__":
