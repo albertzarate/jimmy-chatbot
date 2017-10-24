@@ -34,7 +34,12 @@ def get_classes():
 
 	course_ids = []
 	classes = []
-
+    url = 'https://sjsu.instructure.com/'
+    content = urllib.request.urlopen(url).read()
+    soup=BeautifulSoup(content,'html.parser')
+    tag=soup.body.find(class_="ic-NavMenu-list-item__link")
+    for string in tag.strings
+        print(string)
 	classes_data = {'classes':classes, 'course id': course_ids}
 
 
