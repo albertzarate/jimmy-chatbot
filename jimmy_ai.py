@@ -29,10 +29,17 @@ def get_announcement():
 
 
 def get_classes():
-	
+
+	classes = []
+
+	return classes
+
 
 
 def get_grades():
+	
+	classes = get_classes
+
 
 
 
