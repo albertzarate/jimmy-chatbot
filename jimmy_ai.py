@@ -52,7 +52,8 @@ def get_grades():
 		grade_url = 'https://sjsu.instructure.com/courses/%s/grades' % ids[i]
         content = urllib.request.urlopen(grade_url).read()
         soup=BeautifulSoup(content)
-        print(soup.get_text().find("Title:"))
+        print(soup.get_text().find("Total:"))
+        # this returns index of Total. Right after total is the grade.
 
 
 @post('/')
