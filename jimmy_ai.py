@@ -2,8 +2,11 @@
 from itty import *
 import json
 import pprint
-import jimmy 
+import jimmy
 import requests
+from bs4 import BeautifulSoup
+import urllib.request
+
 
 # api info website for Canvas https://canvas.instructure.com/courses/785215
 # api documentation for Canvas https://canvas.instructure.com/doc/api/index.html
@@ -15,13 +18,13 @@ def Authorization():
 
 def get_announcement():
 	url = 'https://canvas.instructure.com/api/v1//api/v1/announcements'
-	
+
 	params = {
 		'context_codes':'',
 		'start_date':'',
 		'end_date':'',
 		'active_only':''}
-	
+
 	r = requests.get(url, params,headers = {"Authorization":access_token} )
 	data = json.loads(r.text)
 	title = data['title'], message = data['message']
@@ -40,15 +43,18 @@ def get_classes():
 
 
 def get_grades():
-	
+
 	classes = get_classes()
 
 	ids = classes_data['course id']
 
-	for i, cid in enumerate(ids): 
+	for i, cid in enumerate(ids):
 		grade_url = 'https://sjsu.instructure.com/courses/%s/grades' % ids[i]
+        content = urllib.request.urlopen(grade_url).read()
+        soup=BeautifulSoup(content)
+        print(soup.get_text().find("Title:"))
 
-		
+
 @post('/')
 def index(request):
 	r = json.loads(request.body)
@@ -70,8 +76,6 @@ def index(request):
 		get_announcement()
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
 
 	run_itty(server='wsgiref', host='0.0.0.0', port=8080)
-	
-	
