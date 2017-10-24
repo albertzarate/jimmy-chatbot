@@ -49,18 +49,23 @@ def get_classes():
 
 def get_grades():
 
-	classes = get_classes()
-
-	ids = classes_data['course id']
-
-	for i, cid in enumerate(ids):
-		grade_url = 'https://sjsu.instructure.com/courses/%s/grades' % ids[i]
+    classes_data = get_classes() # gets a dict of class data from get_classes()
+    ids = classes_data['course id'] # the ids of the classes as a list
+    courses = classes_data['classes'] # the class names in a list
+    class_and_grade={} # an empty dict for class:grade pairs
+    
+    for i, cid in enumerate(ids):
+        grade_url = 'https://sjsu.instructure.com/courses/%s/grades' % ids[i]
         content = urllib.request.urlopen(grade_url).read()
         soup=BeautifulSoup(content,'html.parser')
         tag=soup.body.find(class_="student_assignment final_grade")
-        for string in tag.strings
-            print(string)
+        grade=""
+        for string in tag.stripped_strings
+            grade+=(repr(string))
+        grade=grade[9]+grade[10]+'%' #orig str is 'total:__%', this returns __%
+        class_and_grade[courses[i]]=grade #adds a class:grade pair
 
+    return class_and_grade # returns a dict of class:grade pairs
 
 @post('/')
 def index(request):
