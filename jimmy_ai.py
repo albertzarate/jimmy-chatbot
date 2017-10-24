@@ -28,6 +28,15 @@ def get_announcement():
 	output = 'reply message'
 
 
+def get_classes():
+	
+
+
+def get_grades():
+
+
+
+
 @post('/')
 def index(request):
 	r = json.loads(request.body)
@@ -41,6 +50,9 @@ def index(request):
 
 	if action == 'get_grades':
 		get_grades()
+
+	if action == 'classes':
+		get_classes()
 
 	if action == 'get_announcement':
 		get_announcement()
