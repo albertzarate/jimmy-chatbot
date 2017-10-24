@@ -2223,13 +2223,10 @@ From the abstract it is not clear how each algorithm will be used. In the projec
     for string in tag.stripped_strings
         grade+=(repr(string))
     grade=grade[9]+grade[10]+'%' #orig str is 'total:__%', this returns __%
-    class_and_grade[courses[i]]=grade #adds a class:grade pair
 
-    msg = "Grade for CMPE 130"
+    msg = "Grade for CMPE 130: "
     msg += grade
     post_message_data( { "roomId": roomid, "markdown": msg } )
-
-    return class_and_grade # returns a dict of class:grade pairs
 
 
 @post('/')
