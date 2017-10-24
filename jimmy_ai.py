@@ -14,18 +14,30 @@ import urllib.request
 # example: https://canvas.instructure.com/api/v1/courses?include[]=total_scores  for the request for user's grades
 
 def Authorization():
-    	global access_token
+	# send an account linking button to the user
+	# note: https://discuss.api.ai/t/authenticate-user-on-facebook-messenger/2917
+	#       https://developers.facebook.com/docs/messenger-platform/send-messages/buttons
+	
+	url = "https://developers.facebook.com/apps/1531277306967086/webhooks/"
+	# not sure about the format
+	data = {
+		'type':'account_linking',
+		'url':'canvas login url'}
+
+	requests.post(url, data = data)
+
+
+
 
 def get_announcement():
-	url = 'https://canvas.instructure.com/api/v1//api/v1/announcements'
-
+	url = "https://canvas.instructure.com/api/v1/announcements"
 	params = {
 		'context_codes':'',
 		'start_date':'',
 		'end_date':'',
 		'active_only':''}
 
-	r = requests.get(url, params,headers = {"Authorization":access_token} )
+	r = requests.get(url, params = params,headers = {"Authorization":access_token} )
 	data = json.loads(r.text)
 	title = data['title'], message = data['message']
 	output = 'reply message'
@@ -86,6 +98,18 @@ def index(request):
 
 	if action == 'get_announcement':
 		get_announcement()
+
+# triggered by canvas login URL callback
+@post('/')
+def authentication(request):
+	global access_token;
+	r = json.loads(request.body)
+	access_token = r[???]
+
+	# call intended function
+
+
+
 
 
 if __name__ == "__main__":
