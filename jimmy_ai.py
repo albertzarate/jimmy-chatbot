@@ -27,23 +27,28 @@ def get_announcement():
 	title = data['title'], message = data['message']
 	output = 'reply message'
 
-
 def get_classes():
 
+	course_ids = []
 	classes = []
 
-	return classes
+	classes_data = {'classes':classes, 'course id': course_ids}
+
+
+	return classes_data
 
 
 
 def get_grades():
 	
-	classes = get_classes
+	classes = get_classes()
 
+	ids = classes_data['course id']
 
+	for i, cid in enumerate(ids): 
+		grade_url = 'https://sjsu.instructure.com/courses/%s/grades' % ids[i]
 
-
-
+		
 @post('/')
 def index(request):
 	r = json.loads(request.body)
