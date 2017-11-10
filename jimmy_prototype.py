@@ -1,11 +1,13 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from itty import *
 import json
 import pprint
-import jimmy
 import requests
 from bs4 import BeautifulSoup
-import urllib.request
+from six.moves import urllib
+import urllib2
 
 
 # api info website for Canvas https://canvas.instructure.com/courses/785215
@@ -70,17 +72,17 @@ def get_classes():
 
 
 
-def get_grades():
+def get_grades(roomid):
 
-	classes_data = get_classes() # gets a dict of class data from get_classes()
+  classes_data = get_classes() # gets a dict of class data from get_classes()
 
-	ids = classes_data['course id'] # the ids of the classes as a list
+  ids = classes_data['course id'] # the ids of the classes as a list
 
-    courses = classes_data['classes'] # the class names in a list
+  courses = classes_data['classes'] # the class names in a list
 
-    class_and_grade={} # an empty dict for class:grade pairs
+  class_and_grade={} # an empty dict for class:grade pairs
 
-	content="""
+  content="""
     <html class="lato-font-loaded" lang="en"><head>
   <meta charset="utf-8">
   <title>Grades for Albert Zarate: FA17: CMPE-130 Sec 02 - Adv Alg Des</title>
@@ -2217,40 +2219,41 @@ From the abstract it is not clear how each algorithm will be used. In the projec
 
 <div class="ReactTrayPortal"><div data-reactid=".1"></div></div></body></html>
     """
-    soup=BeautifulSoup(content,'html.parser')
-    tag=soup.body.find(class_="student_assignment final_grade")
-    grade=""
-    for string in tag.stripped_strings
-        grade+=(repr(string))
-    grade=grade[9]+grade[10]+'%' #orig str is 'total:__%', this returns __%
+  roomid = roomid
+  soup=BeautifulSoup(content,'html.parser')
+  tag=soup.body.find(class_="student_assignment final_grade")
+  grade=""
+  for string in tag.stripped_strings:
+      grade+=(repr(string))
+  grade=grade[9]+grade[10]+'%' #orig str is 'total:__%', this returns __%
 
-    msg = "Grade for CMPE 130: "
-    msg += grade
-    post_message_data( { "roomId": roomid, "markdown": msg } )
+  msg = "Grade for CMPE 130: "
+  msg += grade
+  post_message_data( { "roomId": roomid, "markdown": msg } )
 
 
 @post('/')
 def index(request):
-	r = json.loads(request.body)
-	if not r:
-	    return "True"
+  r = json.loads(request.body)
+  if not r:
+      return "True"
 
-	pprint.pprint(r)
+  pprint.pprint(r)
 
-    roomid = r['originalRequest']['data']['data']['roomId']
+  roomid = r['originalRequest']['data']['data']['roomId']
 
-	action = r['result']['action']
+  action = r['result']['action']
 
-	if action == 'get_grades':
-		get_grades()
+  if action == 'get_grades':
+  	get_grades(roomid)
 
-	if action == 'classes':
-		get_classes()
+  if action == 'classes':
+  	get_classes()
 
-	if action == 'get_announcement':
-		get_announcement()
+  if action == 'get_announcement':
+  	get_announcement()
 
-    return True
+  return True
 
 
 if __name__ == "__main__":
