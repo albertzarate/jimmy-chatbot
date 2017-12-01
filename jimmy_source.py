@@ -130,6 +130,13 @@ def get_announcements(roomid):
     print anns['title']
     print anns['message']
 
+    msg = "Title: "
+    msg += str(anns['title'])
+    msg += "  Message: "
+    msg += str(anns['message'])
+    
+    post_message_data( { "roomId": roomid, "markdown": msg } )
+
 @post('/')
 def index(request):
     r = json.loads(request.body)
