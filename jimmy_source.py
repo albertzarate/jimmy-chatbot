@@ -121,6 +121,15 @@ def get_classes(access_token, roomid):
     course_info = {'course':classes, 'c_ids': ids}
     return course_info
 
+def get_announcements(roomid):
+    canvas_an = CanvasAPI(access_token, base_url = 'https://sjsu.instructure.com', api_prefix='/api/v1')
+    anns = canvas_an.get_announcements()
+
+    print anns
+
+    print anns['title']
+    print anns['message']
+
 @post('/')
 def index(request):
     r = json.loads(request.body)
