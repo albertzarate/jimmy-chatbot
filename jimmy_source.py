@@ -37,7 +37,39 @@ def sendSparkPOST(url, data):
 def post_message_data(data):
 	messages_url = 'https://api.ciscospark.com/v1/messages'
 	sendSparkPOST(messages_url, data)
+	
+def get_classes(access_token, roomid):
+    canvas1 = CanvasAPI(access_token, base_url = 'https://sjsu.instructure.com', api_prefix='/api/v1')
+    
 
+    courses = canvas1.get_courses()
+    pprint.pprint(courses)
+
+    classes = {}
+    classes = []
+    ids = []
+    for course in courses: 
+        try:
+            name = course['course_code']
+            c_id = course['id']
+            classes.append(name)
+            ids.append(c_id)
+        except:
+            pass
+    
+    print classes
+    print ids
+    
+    msg = "Courses:"
+    for c in classes:
+        msg += ' '
+        msg += c
+        msg += ' '
+
+    post_message_data( { "roomId": roomid, "markdown": msg } )
+
+    course_info = {'course':classes, 'c_ids': ids}
+    return course_info
 
 @post('/')
 def index(request):
