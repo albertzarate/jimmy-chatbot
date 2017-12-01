@@ -38,9 +38,34 @@ def post_message_data(data):
 	messages_url = 'https://api.ciscospark.com/v1/messages'
 	sendSparkPOST(messages_url, data)
 
+def get_assignments(access_token, date_t, roomid):
+    msg = "Checking.... "
+    post_message_data( { "roomId": roomid, "markdown": msg } )
+
+    course_info = helper_classes(access_token)
+    canvas_a = CanvasAPI(access_token, base_url = 'http://sjsu.instructure.com', api_prefix='/api/v1')
+    a_num = 0
+    for course_id in course_info['c_ids']:
+        assignments = canvas_a.get_assignments(course_id)
+        for obj in assignments:
+            c_date1 = obj['due_at']
+            c_date = str(c_date1)
+            if c_date != None:
+                if c_date[0] != 'N':
+                    print c_date[0:10]
+                    print str(date_t)
+                    if c_date[0:10] == str(date_t):
+                        print a_num
+                        print course_id
+                        a_num = a_num + 1
+    msg = "Number of Assignments due Today: "
+    msg += str(a_num)
+
+    post_message_data( { "roomId": roomid, "markdown": msg } )
+
 def helper_classes(access_token):
     canvas1 = CanvasAPI(access_token, base_url = 'https://sjsu.instructure.com', api_prefix='/api/v1')
-    
+
 
     courses = canvas1.get_courses()
     pprint.pprint(courses)
@@ -48,7 +73,7 @@ def helper_classes(access_token):
     classes = {}
     classes = []
     ids = []
-    for course in courses: 
+    for course in courses:
         try:
             name = course['course_code']
             c_id = course['id']
@@ -56,16 +81,16 @@ def helper_classes(access_token):
             ids.append(c_id)
         except:
             pass
-    
+
     print classes
     print ids
 
     course_info = {'course':classes, 'c_ids': ids}
     return course_info
-	
+
 def get_classes(access_token, roomid):
     canvas1 = CanvasAPI(access_token, base_url = 'https://sjsu.instructure.com', api_prefix='/api/v1')
-    
+
 
     courses = canvas1.get_courses()
     pprint.pprint(courses)
@@ -73,7 +98,7 @@ def get_classes(access_token, roomid):
     classes = {}
     classes = []
     ids = []
-    for course in courses: 
+    for course in courses:
         try:
             name = course['course_code']
             c_id = course['id']
@@ -81,10 +106,10 @@ def get_classes(access_token, roomid):
             ids.append(c_id)
         except:
             pass
-    
+
     print classes
     print ids
-    
+
     msg = "Courses:"
     for c in classes:
         msg += ' '
@@ -103,13 +128,13 @@ def index(request):
         return "True"
 
     action = r['result']['action']
-    
+
     roomid = r['originalRequest']['data']['data']['roomId']
 
     if action == 'get_classes':
         username = r['result']['parameters']['username']
         get_classes(access_token, roomid)
-    
+
     if action == 'get_assignments':
         date_t = r['result']['parameters']['date']
         get_assignments(access_token, date_t, roomid)
